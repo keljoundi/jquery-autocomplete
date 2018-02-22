@@ -22,21 +22,3 @@
 .AutoComplete-container > div{
 
 }
-
-body{
-	background-color: blue;
-}
-
-
-#foo2{
-	width: 100px;
-	height: 100px;
-	background-color: red;
-	margin-bottom: 10px; 
-}
-
-#foo3{
-	width: 100px;
-	height: 100px;
-	background-color: blue;
-}
