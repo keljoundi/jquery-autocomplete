@@ -1,0 +1,65 @@
+<html>
+
+	<head>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="auto-complete.js"></script>		
+
+		<script type="text/javascript">
+			
+			$(function() {
+
+				$("#foo").autoComplete({
+					source: 
+						function () {
+			                return [
+			                	{"name":"kasey"},{"name":"ramhi"},{"name":"tarek"},{"name":"kaseya"},{"name":"rahmia"},{"name":"tareka"},
+			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"},
+			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"},
+			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"}
+		                		];
+			            },
+		            sourceComparitor: "name",
+		            sourceDisplay: "name"
+				});
+
+			});
+
+		</script>
+
+		<style type="text/css">
+			body{
+				position: relative;
+			}
+			.AutoComplete-container{
+				display: none;
+				position: absolute;
+				max-height: 100px;
+				overflow-y: scroll;
+				background-color: whitesmoke;
+				cursor: pointer;
+			}
+			.AutoComplete-container > div{
+
+			}
+		</style>	
+
+	</head>
+
+	<body>
+		<br />
+		<br />
+		<br />
+
+		<input type="text" id="foo">
+
+		<br />
+		<br />
+		<br />
+		<div id="foo2">
+		</div>
+		<div id="foo3">
+		</div>
+	</body>
+
+</html>

@@ -1,0 +1,42 @@
+/*.AutoComplete_container{
+	display: none;
+    position: absolute;
+    /*"left":left
+    "top":top*
+    max-height: 100px;
+    overflow-y: scroll;
+    width: 100px;
+    background-color: whitesmoke;
+    cursor: pointer;
+}*/
+
+.AutoComplete-container{
+	display: none;
+	position: absolute;
+	max-height: 100px;
+	overflow-y: scroll;
+	background-color: whitesmoke;
+	cursor: pointer;
+}
+
+.AutoComplete-container > div{
+
+}
+
+body{
+	background-color: blue;
+}
+
+
+#foo2{
+	width: 100px;
+	height: 100px;
+	background-color: red;
+	margin-bottom: 10px; 
+}
+
+#foo3{
+	width: 100px;
+	height: 100px;
+	background-color: blue;
+}
