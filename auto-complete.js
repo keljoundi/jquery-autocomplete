@@ -1,3 +1,17 @@
+
+
+
+/*
+    TODO:
+        - remove query "class variable"
+        - combine two options properties for sorting
+        - styling
+        - set default sourceComparitor = sourceDisplay property
+        - implement container option
+        - multi-level property options. i.e. sourceDisplay = name->first
+        - implement ignore case option
+        - destroy() function
+*/
 ;(function($) {
 
     function AutoCompletePlugin(element, options) {
@@ -7,7 +21,7 @@
         this.$listElement = null;
         this.sourceArray =  null;
         this.subsetArray =  null;
-        this.query =        null;
+        this.query =        null; /* can probably just use paremeter passing instead of this variable */
         this.selectedObj =  null;
 
         //initialize
@@ -22,22 +36,21 @@
 
         //click on selection
         this.$listElement.on('click','div',function(){
-            that._click(this);
+            that._select(this);
         });
 
-    };
-
-
-
-    
+    };    
 
 
     AutoCompletePlugin.DEFAULTS = {
         source: null,
-        sourceComparitor: 0,
-        sourceDisplay: 0,
+        sourceComparitor: null,
+        sourceDisplay: null,
+        sortSource: false,  /* unnecessary, just user precence of sortOn property */
+        sortOn: null,
         container: null,
         minChars: 3,
+        ignoreCase: true,
         onKeyup: function(){},
         onSelect: function(){}
     };
@@ -58,9 +71,10 @@
 
     /*
         _init
-        @params:
-            element: element plugin is attatched to
-            options: obj defining user-specified options
+            @desc: initial setup, define input element, set options, 
+                retrieve source, initialize DOM elements
+            @param {object} element: element plugin is attatched to
+            @param {object} options: user-specified options/settings
     */
     AutoCompletePlugin.prototype._init = function(element, options){
         this.$element = $(element);
@@ -69,15 +83,20 @@
         this._createList();
     }
 
-    /*
 
+    /*
+        getDefaults
+            @desc: get default options
+            @return {object}: default options
     */
     AutoCompletePlugin.prototype.getDefaults = function() {
         return AutoCompletePlugin.DEFAULTS;
     }
 
-    /*
 
+    /*
+        retrieveSource
+            @desc: set source & subset arrays, call user-defined function if available
     */
     AutoCompletePlugin.prototype.retrieveSource = function(){
 
@@ -89,15 +108,44 @@
         if( $.isArray(source) ){
             this.sourceArray = source;
         }
+
+        if( this.options.sortSource === true && this.options.sortOn !== null ){
+            console.log("sort");
+            this._sortSource();
+        }else{
+            console.log("no sort");
+        }
+
         this.subsetArray = this.sourceArray;
     }
 
+
     /*
-    
+        _sortSource
+            @desc: sort input source on user-defined field 
+    */
+    AutoCompletePlugin.prototype._sortSource = function(){
+        var sort_property = this.options.sortOn;
+
+        this.sourceArray.sort(function(obj1,obj2){
+            var a = obj1[sort_property].toLowerCase();
+            var b = obj2[sort_property].toLowerCase();
+            if(a < b)
+                return -1
+            if(a > b)
+                return 1
+            return 0
+        });
+    }
+
+
+    /*
+        _createList
+            @desc: add div element to DOM for display
     */
     AutoCompletePlugin.prototype._createList = function(){
         this.$listElement = 
-            $('<div>Blah</div>')
+            $('<div></div>')
                 .addClass('AutoComplete-container');
 
         var $container = 
@@ -113,8 +161,10 @@
         this._positionList();
     }
 
-    /*
 
+    /*
+        _positionList
+            @desc: position DOM element correctly (directly below input element)
     */
     AutoCompletePlugin.prototype._positionList = function(){
         var pos =   this.$element.position();
@@ -132,21 +182,27 @@
 
 
     /*
-
+        show
+            @desc: show the list
     */
     AutoCompletePlugin.prototype.show = function() {
         this.$listElement.css({"display":"block"});
     }
 
-    /*
 
+    /*
+        hide
+            @desc: hide the list
     */
     AutoCompletePlugin.prototype.hide = function() {
         this.$listElement.css({"display":"none"});
     }
 
-    /*
 
+    /*
+        _keyup
+            @desc: callback for keyup events on input
+            @param {event object} e: keyup event object
     */
     AutoCompletePlugin.prototype._keyup = function(e){
         this.query = this.$element.val();
@@ -166,8 +222,11 @@
         }  
     }
 
-    /*
 
+    /*
+        _filter
+            @desc: create subset of matching objects
+            @param {bool} fromSubset: filter from source or cached subset
     */
     AutoCompletePlugin.prototype._filter = function(fromSubset){
         var set = fromSubset === true ? this.subsetArray : this.sourceArray;
@@ -182,8 +241,10 @@
         this._displayFiltered();
     }
 
-    /*
 
+    /*
+        _displayFiltered
+            @desc: display filtered items in dropdown list
     */
     AutoCompletePlugin.prototype._displayFiltered = function(){
         this.$listElement.empty();
@@ -196,24 +257,31 @@
         });
     }
 
-    /*
 
+    /*
+        _select
+            @desc: click handler for dropdown list items
+            @params {object} list_option: element that received click in dropdown list
     */
-    AutoCompletePlugin.prototype._click = function(list_option){
+    AutoCompletePlugin.prototype._select = function(list_option){
         this.selectedObj = $(list_option).data();
         this.$element.val( this.selectedObj[this.options.sourceDisplay] );
         this.hide();
     }
 
-    /*
 
+    /*
+        _clearList
+            @desc: 
     */
     AutoCompletePlugin.prototype._clearList = function(){
         this.$listElement.empty();        
     }
 
-    /*
 
+    /*
+        clear
+            @desc: clear input, reset cached subset, hide dropdown
     */
     AutoCompletePlugin.prototype.clear = function(){
         this.$element.val("");
@@ -223,8 +291,11 @@
         this.hide();
     }    
 
-    /*
 
+    /*
+        value
+            @desc: return value of selected item
+            @return {object}: object selected by user from dropdown
     */
     AutoCompletePlugin.prototype.value = function(){
         return this.selectedObj;
@@ -232,10 +303,10 @@
 
 
 
+
     /*
         autoComplete
-        @params:
-            options: obj defining user-specified options
+            @params {object} options: user-specified options for plugin
     */
     $.fn.autoComplete = function (options) {
 
@@ -252,18 +323,12 @@
             }            
         }
         else
-        //call plugin methods if string passed
-        if( typeof options === 'string'){
-
-            //no plugin instance
-            if(instance === undefined){
-                return;
-            }
-
-            //call plugin function
+        //call plugin methods if string passed and instance exists
+        if( typeof options === 'string' && instance !== undefined){
+            
             return instance[options].apply(instance);   
         }
-        //no plugin instnace found
+        //no plugin instance found
         else if(instance === undefined){
             return;
         }

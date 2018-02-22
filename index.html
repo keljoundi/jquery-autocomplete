@@ -9,18 +9,22 @@
 			
 			$(function() {
 
-				$("#foo").autoComplete({
+				$("#myInput").autoComplete({
 					source: 
 						function () {
-			                return [
+			                /*return [
 			                	{"name":"kasey"},{"name":"ramhi"},{"name":"tarek"},{"name":"kaseya"},{"name":"rahmia"},{"name":"tareka"},
 			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"},
 			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"},
 			                	{"name":"kaseyaa"},{"name":"ramhiaa"},{"name":"tarekdw"},{"name":"kaseyatr"},{"name":"rahmiaxc"},{"name":"tarekaw"}
-		                		];
+		                		];*/
+
+		                		return [{"_id":"5a8f4b33bee5e2e0288c61e2","name":"Jacquelyn Dawson"},{"_id":"5a8f4b33789fc86b08807104","name":"Jodie Moses"},{"_id":"5a8f4b3392620a5035e311be","name":"Kelly Crane"},{"_id":"5a8f4b339be50b071206868d","name":"Crane Nolan"},{"_id":"5a8f4b33df8dfda0db868bf9","name":"Horton Pennington"},{"_id":"5a8f4b337f6a48c10790a4f0","name":"Annmarie Weiss"},{"_id":"5a8f4b333b77bc9589cf59d2","name":"Keisha Ellison"},{"_id":"5a8f4b33645610580653acec","name":"Brooke Joseph"},{"_id":"5a8f4b3319ca93dabf74008e","name":"Hernandez Duran"},{"_id":"5a8f4b3385fe3240166fd3e2","name":"Abigail Henson"},{"_id":"5a8f4b336b7e643188606a93","name":"Hurst Newman"},{"_id":"5a8f4b33d52d0a23817d9e1a","name":"Sandy Parsons"},{"_id":"5a8f4b330c40a05b76bfe7c0","name":"Clarice Riggs"},{"_id":"5a8f4b33e362528464778a7f","name":"Blake Mcdonald"},{"_id":"5a8f4b3325096563a0797772","name":"Cote Woods"},{"_id":"5a8f4b335dee9a8b800a924b","name":"Patti Weeks"},{"_id":"5a8f4b33369a8e87cc1bb2da","name":"Shelly Deleon"},{"_id":"5a8f4b331f9348b96e7c1247","name":"Huffman Bishop"},{"_id":"5a8f4b33b8368fec8803ea4a","name":"Kirkland Hopper"},{"_id":"5a8f4b33872516a3f6676bd2","name":"Snider Mullen"},{"_id":"5a8f4b33c85f6a0941ec7720","name":"Ana Woodward"},{"_id":"5a8f4b33b6f8ad3f95e8bfd0","name":"Juliana Norton"},{"_id":"5a8f4b3332d55194a72e70a8","name":"Freida Ramos"},{"_id":"5a8f4b33ed517ff15d3bbc4b","name":"Chrystal White"},{"_id":"5a8f4b339ddf3d80f568223e","name":"Elma Lyons"},{"_id":"5a8f4b33c9a2d9d9e2cbfcdd","name":"Isabel Blair"},{"_id":"5a8f4b33ca4b29c664433341","name":"Rosa Clayton"},{"_id":"5a8f4b334640ed4f66a12062","name":"Deena Dejesus"},{"_id":"5a8f4b331e08326fe461d08d","name":"Walker Mcdaniel"},{"_id":"5a8f4b3384747316d88892c9","name":"Rosalie Fleming"},{"_id":"5a8f4b3325bee2cb5412d0b8","name":"Suarez Wong"},{"_id":"5a8f4b33e37354b4814d20d3","name":"Susanna Miles"},{"_id":"5a8f4b33bef248d040da0e81","name":"Sharpe Frost"},{"_id":"5a8f4b33105f47566c1ab6e3","name":"Bennett Hartman"},{"_id":"5a8f4b33038d4d4934882bba","name":"Felicia Cook"},{"_id":"5a8f4b334da00a6add98ed54","name":"Saundra Gillespie"},{"_id":"5a8f4b33f2efa3971f3ec3e9","name":"Mitchell Short"},{"_id":"5a8f4b33bc4446741d56662b","name":"Pate Noble"},{"_id":"5a8f4b33283dfe683875735f","name":"Sharron Mcconnell"},{"_id":"5a8f4b334496367388776b9e","name":"Mills Willis"},{"_id":"5a8f4b33771160ba12b6e9c1","name":"Ruth Oneil"},{"_id":"5a8f4b3348c9a007da6d6446","name":"Hays Gutierrez"},{"_id":"5a8f4b3378d0592024497a0c","name":"Gordon Castaneda"},{"_id":"5a8f4b33ff0780e28435c90b","name":"Reese Dotson"},{"_id":"5a8f4b3387535d7c84e5f263","name":"Osborn Battle"},{"_id":"5a8f4b333f08df51e4769687","name":"Kinney Casey"},{"_id":"5a8f4b33ff0b6cdcb9e27435","name":"Shelton Madden"},{"_id":"5a8f4b330058284876f0ced7","name":"Daniels Hopkins"},{"_id":"5a8f4b3326ee5a913bd9eff6","name":"Alexis Sanchez"},{"_id":"5a8f4b33833e2ae5b864d206","name":"Hunt Winters"}];
 			            },
 		            sourceComparitor: "name",
-		            sourceDisplay: "name"
+		            sourceDisplay: "name",
+		            sortSource: true,
+		            sortOn: "name"
 				});
 
 			});
@@ -51,15 +55,8 @@
 		<br />
 		<br />
 
-		<input type="text" id="foo">
+		<input type="text" id="myInput">
 
-		<br />
-		<br />
-		<br />
-		<div id="foo2">
-		</div>
-		<div id="foo3">
-		</div>
 	</body>
 
 </html>
