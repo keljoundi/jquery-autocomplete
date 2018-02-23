@@ -3,13 +3,11 @@
 
 /*
     TODO:
-        - remove query "class variable"
         - combine two options properties for sorting
         - styling
         - set default sourceComparitor = sourceDisplay property
         - implement container option
         - multi-level property options. i.e. sourceDisplay = name->first
-        - implement ignore case option
         - destroy() function
 */
 ;(function($) {
@@ -21,11 +19,10 @@
         this.$listElement = null;
         this.sourceArray =  null;
         this.subsetArray =  null;
-        this.query =        null; /* can probably just use paremeter passing instead of this variable */
         this.selectedObj =  null;
 
         //initialize
-        this._init(element, options);        
+        this._init(element, options);
 
         var that = this;
 
@@ -39,7 +36,7 @@
             that._select(this);
         });
 
-    };    
+    };
 
 
     AutoCompletePlugin.DEFAULTS = {
@@ -50,7 +47,7 @@
         sortOn: null,
         container: null,
         minChars: 3,
-        ignoreCase: true,
+        caseSensitive: false,
         onKeyup: function(){},
         onSelect: function(){}
     };
@@ -71,7 +68,7 @@
 
     /*
         _init
-            @desc: initial setup, define input element, set options, 
+            @desc: initial setup, define input element, set options,
                 retrieve source, initialize DOM elements
             @param {object} element: element plugin is attatched to
             @param {object} options: user-specified options/settings
@@ -109,7 +106,7 @@
             this.sourceArray = source;
         }
 
-        if( this.options.sortSource === true && this.options.sortOn !== null ){
+        if( this.options.sortOn !== null && this.options.sortOn !== ""  ){
             console.log("sort");
             this._sortSource();
         }else{
@@ -122,7 +119,7 @@
 
     /*
         _sortSource
-            @desc: sort input source on user-defined field 
+            @desc: sort input source on user-defined field
     */
     AutoCompletePlugin.prototype._sortSource = function(){
         var sort_property = this.options.sortOn;
@@ -144,12 +141,12 @@
             @desc: add div element to DOM for display
     */
     AutoCompletePlugin.prototype._createList = function(){
-        this.$listElement = 
+        this.$listElement =
             $('<div></div>')
                 .addClass('AutoComplete-container');
 
-        var $container = 
-            this.options.container === null || this.options.container === "" ? 
+        var $container =
+            this.options.container === null || this.options.container === "" ?
                 this.$element.parent() : $(this.options.container);
 
         if( $container.css("position") === "static" ){
@@ -177,7 +174,7 @@
             "width": this.$element.width()
         }
 
-        this.$listElement.css(css);        
+        this.$listElement.css(css);
     }
 
 
@@ -205,21 +202,20 @@
             @param {event object} e: keyup event object
     */
     AutoCompletePlugin.prototype._keyup = function(e){
-        this.query = this.$element.val();
+        var query = this.$element.val();
 
-        var len = this.query.length;
-
-        if( len ){
+        if( query.length ){
             //on backspace(8) or delete(46)
             if( e.which === 8 || e.which === 46){
-                this._filter(false);
+                this._filter(false,query);
             }else{
-                this._filter(true);
-            }    
+                this._filter(true,query);
+            }
             this.show();
         }else{
+            this.subsetArray = this.sourceArray;
             this.hide();
-        }  
+        }
     }
 
 
@@ -228,13 +224,39 @@
             @desc: create subset of matching objects
             @param {bool} fromSubset: filter from source or cached subset
     */
-    AutoCompletePlugin.prototype._filter = function(fromSubset){
+    AutoCompletePlugin.prototype._filter = function(fromSubset, _query){
+        var set = fromSubset === true ? this.subsetArray : this.sourceArray;
+        var that = this;
+        var query = this.options.caseSensitive === true ? _query : _query.toLowerCase();
+
+        console.log(query);
+
+        this.subsetArray =
+            $.grep(set, function (obj, index) {
+                var compare =  obj[that.options.sourceComparitor].substr(0, query.length);
+                compare = that.options.caseSensitive === true ? compare : compare.toLowerCase();
+
+
+
+                if( compare === query )
+                    return obj
+            });
+
+        this._displayFiltered();
+    }
+
+    /*
+        _filterCaseSensitive
+            @desc: create subset of matching objects
+            @param {bool} fromSubset: filter from source or cached subset
+    */
+    AutoCompletePlugin.prototype._filterCaseSensitive = function(fromSubset, query){
         var set = fromSubset === true ? this.subsetArray : this.sourceArray;
         var that = this;
 
-        this.subsetArray = 
+        this.subsetArray =
             $.grep(set, function (obj, index) {
-                if( obj[that.options.sourceComparitor].substr(0, that.query.length) === that.query )
+                if( obj[that.options.sourceComparitor].substr(0, query.length) === query )
                     return obj
             });
 
@@ -267,15 +289,21 @@
         this.selectedObj = $(list_option).data();
         this.$element.val( this.selectedObj[this.options.sourceDisplay] );
         this.hide();
+
+        if( typeof this.options.onSelect === 'function' ){
+          console.log('call user fn');
+            this.options.onSelect.call(null,this.selectedObj);
+        }
+
     }
 
 
     /*
         _clearList
-            @desc: 
+            @desc:
     */
     AutoCompletePlugin.prototype._clearList = function(){
-        this.$listElement.empty();        
+        this.$listElement.empty();
     }
 
 
@@ -289,7 +317,7 @@
         this.subsetArray = this.sourceArray;
         this._clearList();
         this.hide();
-    }    
+    }
 
 
     /*
@@ -319,14 +347,14 @@
             //otherwise, fall-through and return already initialized plugin
             if(instance === undefined){
                 instance = new AutoCompletePlugin($(this),options);
-                $(this).data('AutoCompletePlugin', instance);       
-            }            
+                $(this).data('AutoCompletePlugin', instance);
+            }
         }
         else
         //call plugin methods if string passed and instance exists
         if( typeof options === 'string' && instance !== undefined){
-            
-            return instance[options].apply(instance);   
+
+            return instance[options].apply(instance);
         }
         //no plugin instance found
         else if(instance === undefined){

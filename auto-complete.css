@@ -22,3 +22,18 @@
 .AutoComplete-container > div{
 
 }
+
+#myInput{
+	float:left;
+}
+
+#infoOut{
+	width: 400px;
+  height: 400px;
+  background-color: lightgray;
+	border-radius: 10px;
+	padding: 5px;
+  margin-left: 30px;
+  display: inline-block;
+	margin-left:20px;
+}
