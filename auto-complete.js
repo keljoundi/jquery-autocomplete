@@ -8,6 +8,8 @@
         - multi-level property options. i.e. sourceDisplay = name->first
         - destroy() function
         - sorting expects string, determine datatype and sort accordingly
+        - auto-select if user types in complete selection (don't force mouse click)
+        - keyboard arrow navigation
 */
 ;(function($) {
 
@@ -41,13 +43,22 @@
     AutoCompletePlugin.DEFAULTS = {
         source: null,
         sourceDisplay: null,
-        sourceComparitor: null,
+        sourceComparitor: null,//sourceDisplay
         sortOn: null,
-        container: null,
+        container: null,//parent
         minChars: 3,
         caseSensitive: false,
-        onKeyup: function(e){},
-        onSelect: function(obj){}
+        onKeyup: null,//function(e){},
+        onSelect: null,//function(element,obj){},
+        onDeselect: null//function(element){}
+    };
+
+    AutoCompletePlugin.prototype.KEYCODES = {
+        backspace: 8,
+        delete: 46,
+        down: 40,
+        up: 38,
+        enter: 13
     };
 
     /*AutoCompletePlugin.CONTAINER_CSS = {
@@ -213,11 +224,15 @@
         var query = this.$element.val();
 
         if( query.length ){
-            //on backspace(8) or delete(46)
-            if( e.which === 8 || e.which === 46){
-                this._filter(false,query);
-            }else{
-                this._filter(true,query);
+            //determine key
+            switch(e.which){
+                case AutoCompletePlugin.prototype.KEYCODES.backspace:
+                case AutoCompletePlugin.prototype.KEYCODES.delete:
+                    this._clearValue();
+                    this._filter(false,query);
+                    break;
+                default:
+                    this._filter(true,query);
             }
             this.show();
         }else{
@@ -311,6 +326,20 @@
     */
     AutoCompletePlugin.prototype._clearList = function(){
         this.$listElement.empty();
+    }
+
+
+    /*
+        _clearValue
+            @desc: clear selected value and call onDeselct callback
+    */
+    AutoCompletePlugin.prototype._clearValue = function() {
+        this.selectedObj = null;
+
+        //call user-defined onDeselect function
+        if( typeof this.options.onDeselect === 'function' ){
+            this.options.onDeselect.call(null,this.$element);
+        }
     }
 
 
