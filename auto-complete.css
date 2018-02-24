@@ -23,13 +23,16 @@
 
 }
 
-#myInput{
+div.row{
+	margin-bottom: 20px
+}
+input{
 	float:left;
 }
 
 .infoBox{
 	width: 400px;
-  	height: 200px;
+  	height: 150px;
 	overflow-y: auto;
   	background-color: lightgray;
 	border-radius: 10px;

@@ -4,12 +4,10 @@
 /*
     TODO:
         - styling
-        - set default sourceComparitor = sourceDisplay property
         - implement container option
         - multi-level property options. i.e. sourceDisplay = name->first
         - destroy() function
         - sorting expects string, determine datatype and sort accordingly
-        - allow initializing multiple dropdowns at once
 */
 ;(function($) {
 
@@ -302,7 +300,7 @@
 
         //call user-defined onSelect function
         if( typeof this.options.onSelect === 'function' ){
-            this.options.onSelect.call(null,this.selectedObj);
+            this.options.onSelect.call(null,this.$element,this.selectedObj);
         }
     }
 
@@ -347,31 +345,34 @@
     */
     $.fn.autoComplete = function (options) {
 
-        var instance = $(this).data('AutoCompletePlugin');
+        this.each(function() {
+            var instance = $(this).data('AutoCompletePlugin');
 
-        //create plugin if object passed & not intialized
-        if( typeof options === 'object' ){
+            //create plugin if object passed & not intialized
+            if( typeof options === 'object' ){
 
-            //if instance does not exist, create
-            //otherwise, fall-through and return already initialized plugin
-            if(instance === undefined){
-                instance = new AutoCompletePlugin($(this),options);
-                $(this).data('AutoCompletePlugin', instance);
+                //if instance does not exist, create
+                //otherwise, fall-through and return already initialized plugin
+                if(instance === undefined){
+                    instance = new AutoCompletePlugin($(this),options);
+                    $(this).data('AutoCompletePlugin', instance);
+                }
             }
-        }
-        else
-        //call plugin methods if string passed and instance exists
-        if( typeof options === 'string' && instance !== undefined){
+            else
+            //call plugin methods if string passed and instance exists
+            if( typeof options === 'string' && instance !== undefined){
 
-            return instance[options].apply(instance);
-        }
-        //no plugin instance found
-        else if(instance === undefined){
-            return;
-        }
+                return instance[options].apply(instance);
+            }
+            //no plugin instance found
+            else if(instance === undefined){
+                return;
+            }
 
-        //always return instance
-        return instance;
+            //always return instance
+            return instance;
+        });
+
     }
 
 }(jQuery));
