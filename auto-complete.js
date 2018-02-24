@@ -28,13 +28,19 @@
         var that = this;
 
         //keyup on input
-        this.$element.on('keyup', function(e){
+        this.$element.on('keyup change', function(e){
             that._keyup(e);
         });
 
         //click on selection
-        this.$listElement.on('click','div',function(){
+        this.$listElement.on('click','div',function(e){
+            e.stopPropagation();
             that._select(this);
+        });
+
+        //close menu on document click
+        $(document).click(function() {
+            that.hide();
         });
 
     };
@@ -185,12 +191,12 @@
     AutoCompletePlugin.prototype._positionList = function(){
         var pos =   this.$element.position();
         var left =  pos.left;
-        var top =   pos.top + this.$element.innerHeight();
+        var top =   pos.top + this.$element.outerHeight(false);
 
         var css = {
             "left":left,
             "top":top,
-            "width": this.$element.width()
+            "min-width": this.$element.width()
         }
 
         this.$listElement.css(css);
@@ -223,21 +229,17 @@
     AutoCompletePlugin.prototype._keyup = function(e){
         var query = this.$element.val();
 
-        if( query.length ){
-            //determine key
-            switch(e.which){
-                case AutoCompletePlugin.prototype.KEYCODES.backspace:
-                case AutoCompletePlugin.prototype.KEYCODES.delete:
-                    this._clearValue();
-                    this._filter(false,query);
-                    break;
-                default:
-                    this._filter(true,query);
-            }
-            this.show();
-        }else{
-            this.subsetArray = this.sourceArray;
-            this.hide();
+
+        //determine key
+        switch(e.which){
+            case AutoCompletePlugin.prototype.KEYCODES.backspace:
+            case AutoCompletePlugin.prototype.KEYCODES.delete:
+                this._clearValue();
+                this.subsetArray = this.sourceArray;
+                this._filter(false,query);
+                break;
+            default:
+                this._filter(true,query);
         }
 
         //call user-defined keyup function
@@ -251,6 +253,7 @@
         _filter
             @desc: create subset of matching objects
             @param {bool} fromSubset: filter from source or cached subset
+            @param {string} _query: value search set for
     */
     AutoCompletePlugin.prototype._filter = function(fromSubset, _query){
         var set = fromSubset === true ? this.subsetArray : this.sourceArray;
@@ -259,28 +262,10 @@
 
         this.subsetArray =
             $.grep(set, function (obj, index) {
-                var compare =  obj[that.options.sourceComparitor].substr(0, query.length);
+                var compare =  obj[that.options.sourceComparitor];
                 compare = that.options.caseSensitive === true ? compare : compare.toLowerCase();
-                if( compare === query )
-                    return obj
-            });
-
-        this._displayFiltered();
-    }
-
-    /*
-        _filterCaseSensitive
-            @desc: create subset of matching objects
-            @param {bool} fromSubset: filter from source or cached subset
-    */
-    AutoCompletePlugin.prototype._filterCaseSensitive = function(fromSubset, query){
-        var set = fromSubset === true ? this.subsetArray : this.sourceArray;
-        var that = this;
-
-        this.subsetArray =
-            $.grep(set, function (obj, index) {
-                if( obj[that.options.sourceComparitor].substr(0, query.length) === query )
-                    return obj
+                if( compare.includes(query) )
+                    return obj;
             });
 
         this._displayFiltered();
@@ -294,12 +279,21 @@
     AutoCompletePlugin.prototype._displayFiltered = function(){
         this.$listElement.empty();
         var that = this;
-        $.each(this.subsetArray,function(index, obj){
 
-            var $option = $('<div>'+obj[that.options.sourceDisplay]+'</div>');
-            $option.data(obj);
-            that.$listElement.append($option);
-        });
+        if( this.subsetArray.length ){
+
+            $.each(this.subsetArray,function(index, obj){
+
+                var $option = $('<div>'+obj[that.options.sourceDisplay]+'</div>');
+                $option.data(obj);
+                that.$listElement.append($option);
+            });
+            this.show();
+
+        }else{
+
+            this.hide();
+        }
     }
 
 
