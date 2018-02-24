@@ -13,14 +13,17 @@
 .AutoComplete-container{
 	display: none;
 	position: absolute;
-	max-height: 100px;
-	overflow-y: scroll;
-	background-color: whitesmoke;
+	max-height: 150px;
+	overflow-y: auto;
+	background-color: white;
+	border-color: black;
+	border-style: solid;
+	border-width: 0 1px 1px 1px;
 	cursor: pointer;
 }
 
 .AutoComplete-container > div{
-
+	padding: 0.1em 0.3em;
 }
 
 div.row{
