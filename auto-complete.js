@@ -34,14 +34,14 @@
 
         //click on selection
         this.$listElement.on('click','div',function(e){
-            e.stopPropagation();
+            //e.stopPropagation();
             that._select(this);
         });
 
         //close menu on document click
-        $(document).click(function() {
-            that.hide();
-        });
+        // $(document).click(function() {
+        //     that.hide();
+        // });
 
     };
 
@@ -229,6 +229,9 @@
     AutoCompletePlugin.prototype._keyup = function(e){
         var query = this.$element.val();
 
+        //if a change is made, the selected value (if exists)
+        //  is no longer valid
+        this._clearValue();
 
         //determine key
         switch(e.which){
