@@ -27,13 +27,14 @@
 	float:left;
 }
 
-#infoOut{
+.infoBox{
 	width: 400px;
-  height: 400px;
-  background-color: lightgray;
+  	height: 200px;
+	overflow-y: auto;
+  	background-color: lightgray;
 	border-radius: 10px;
 	padding: 5px;
-  margin-left: 30px;
-  display: inline-block;
+  	margin-left: 30px;
+  	display: inline-block;
 	margin-left:20px;
 }

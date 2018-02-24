@@ -3,12 +3,13 @@
 
 /*
     TODO:
-        - combine two options properties for sorting
         - styling
         - set default sourceComparitor = sourceDisplay property
         - implement container option
         - multi-level property options. i.e. sourceDisplay = name->first
         - destroy() function
+        - sorting expects string, determine datatype and sort accordingly
+        - allow initializing multiple dropdowns at once
 */
 ;(function($) {
 
@@ -41,15 +42,14 @@
 
     AutoCompletePlugin.DEFAULTS = {
         source: null,
-        sourceComparitor: null,
         sourceDisplay: null,
-        sortSource: false,  /* unnecessary, just user precence of sortOn property */
+        sourceComparitor: null,
         sortOn: null,
         container: null,
         minChars: 3,
         caseSensitive: false,
-        onKeyup: function(){},
-        onSelect: function(){}
+        onKeyup: function(e){},
+        onSelect: function(obj){}
     };
 
     /*AutoCompletePlugin.CONTAINER_CSS = {
@@ -73,9 +73,9 @@
             @param {object} element: element plugin is attatched to
             @param {object} options: user-specified options/settings
     */
-    AutoCompletePlugin.prototype._init = function(element, options){
+    AutoCompletePlugin.prototype._init = function(element,options){
         this.$element = $(element);
-        this.options  = $.extend({},this.getDefaults(), options);
+        this._buildOptions(options);
         this.retrieveSource();
         this._createList();
     }
@@ -88,6 +88,19 @@
     */
     AutoCompletePlugin.prototype.getDefaults = function() {
         return AutoCompletePlugin.DEFAULTS;
+    }
+
+
+    /*
+        buildOptions
+            @desc: add defaults and set options for plugin if not defined by user
+            @param {options} options: user-specified options/settings
+    */
+    AutoCompletePlugin.prototype._buildOptions = function(options) {
+        this.options  = $.extend({},this.getDefaults(), options);
+
+        if( this.options.sourceComparitor === null || this.options.sourceComparitor === "" )
+            this.options.sourceComparitor = this.options.sourceDisplay;
     }
 
 
@@ -107,10 +120,7 @@
         }
 
         if( this.options.sortOn !== null && this.options.sortOn !== ""  ){
-            console.log("sort");
             this._sortSource();
-        }else{
-            console.log("no sort");
         }
 
         this.subsetArray = this.sourceArray;
@@ -216,6 +226,11 @@
             this.subsetArray = this.sourceArray;
             this.hide();
         }
+
+        //call user-defined keyup function
+        if( typeof this.options.onKeyup === 'function' ){
+            this.options.onKeyup.call(null, e);
+        }
     }
 
 
@@ -229,15 +244,10 @@
         var that = this;
         var query = this.options.caseSensitive === true ? _query : _query.toLowerCase();
 
-        console.log(query);
-
         this.subsetArray =
             $.grep(set, function (obj, index) {
                 var compare =  obj[that.options.sourceComparitor].substr(0, query.length);
                 compare = that.options.caseSensitive === true ? compare : compare.toLowerCase();
-
-
-
                 if( compare === query )
                     return obj
             });
@@ -290,11 +300,10 @@
         this.$element.val( this.selectedObj[this.options.sourceDisplay] );
         this.hide();
 
+        //call user-defined onSelect function
         if( typeof this.options.onSelect === 'function' ){
-          console.log('call user fn');
             this.options.onSelect.call(null,this.selectedObj);
         }
-
     }
 
 
