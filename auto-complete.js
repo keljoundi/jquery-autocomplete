@@ -10,6 +10,7 @@
         - sorting expects string, determine datatype and sort accordingly
         - auto-select if user types in complete selection (don't force mouse click)
         - keyboard arrow navigation
+        - update source after initialized
 */
 ;(function($) {
 
@@ -28,20 +29,19 @@
         var that = this;
 
         //keyup on input
-        this.$element.on('keyup change', function(e){
+        this.$element.on('keyup', function(e){
             that._keyup(e);
         });
 
         //click on selection
         this.$listElement.on('click','div',function(e){
-            //e.stopPropagation();
             that._select(this);
         });
 
         //close menu on document click
-        // $(document).click(function() {
-        //     that.hide();
-        // });
+        $(document).click(function() {
+            that.hide();
+        });
 
     };
 
@@ -196,7 +196,7 @@
         var css = {
             "left":left,
             "top":top,
-            "min-width": this.$element.width()
+            "min-width": this.$element.outerWidth(false)
         }
 
         this.$listElement.css(css);
@@ -388,7 +388,7 @@
             //call plugin methods if string passed and instance exists
             if( typeof options === 'string' && instance !== undefined){
 
-                return instance[options].apply(instance);
+                return instance[options].call(instance);
             }
             //no plugin instance found
             else if(instance === undefined){
