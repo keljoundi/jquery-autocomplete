@@ -3,7 +3,6 @@
 
 /*
     TODO:
-        - styling
         - implement container option
         - multi-level property options. i.e. sourceDisplay = name->first
         - destroy() function
