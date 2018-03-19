@@ -28,6 +28,10 @@
 	padding: 0.1em 0.3em;
 }
 
+.AutoComplete-container > div:hover{
+	background-color: :lightgray;
+}
+
 div.ac-row{
 	margin-bottom: 20px
 }

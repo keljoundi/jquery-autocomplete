@@ -11,6 +11,8 @@
         - auto-select if user types in complete selection (don't force mouse click)
         - keyboard arrow navigation
         - update source after initialized
+        - check for function calls before loop! no return possible otherwise!
+        - remove sourceDisplay, use comparitor by default if no displayText fn
 */
 ;(function($) {
 
@@ -56,8 +58,26 @@
         caseSensitive: false,
         onKeyup: null,//function(e){},
         onSelect: null,//function(element,obj){},
-        onDeselect: null//function(element){}
+        onDeselect: null,//function(element){}
+        displayText: null//function(obj){return string;}
     };
+    /*
+        onKeyup
+            @param {object} : js click-event object
+
+        onSelect
+            @param {object} : jquery input object
+            @param {object} : corrisponding object selected by user from list
+
+        onDeselct
+            @param {object} : jquery input object
+
+        displayText
+            @desc: user-defined fn to allow for "fancy" text-display such as
+                mulitple obj elements or pre/appened texts
+            @param {object} : object found through filtering
+            @return {string}: string to display in dropdown
+    */
 
     AutoCompletePlugin.prototype.KEYCODES = {
         backspace: 8,
@@ -117,6 +137,12 @@
         if( this.options.sourceComparitor === null || this.options.sourceComparitor === "" )
             this.options.sourceComparitor = this.options.sourceDisplay;
     }
+
+
+    /*
+        _parseDisplayString
+            @desc: extract bracket-enclosed texts to use as object
+    */
 
 
     /*
@@ -286,8 +312,16 @@
         if( this.subsetArray.length ){
 
             $.each(this.subsetArray,function(index, obj){
+                var text = "";
+                //call user-defined display function
+                if( that.options.displayText !== null ){
 
-                var $option = $('<div>'+obj[that.options.sourceDisplay]+'</div>');
+                    text = that.options.displayText.call(null, obj);
+                }else{
+                    text = obj[that.options.sourceDisplay];
+                }
+                var $option = $('<div>'+text+'</div>');
+
                 $option.data(obj);
                 that.$listElement.append($option);
             });
@@ -300,6 +334,7 @@
     }
 
 
+
     /*
         _select
             @desc: click handler for dropdown list items
@@ -307,7 +342,16 @@
     */
     AutoCompletePlugin.prototype._select = function(list_option){
         this.selectedObj = $(list_option).data();
-        this.$element.val( this.selectedObj[this.options.sourceDisplay] );
+
+        var text = "";
+        //call user-defined display function
+        if( typeof this.options.displayText === 'function' ){
+            text = this.options.displayText.call(null, this.selectedObj);
+        }else{
+             text = this.selectedObj[this.options.sourceDisplay];
+        }
+        this.$element.val(text);
+        this.$element.val();
         this.hide();
 
         //call user-defined onSelect function
@@ -363,14 +407,13 @@
     }
 
 
-
-
     /*
         autoComplete
             @params {object} options: user-specified options for plugin
     */
     $.fn.autoComplete = function (options) {
 
+        //TODO: check for function calls before loop! no return possible otherwise!
         this.each(function() {
             var instance = $(this).data('AutoCompletePlugin');
 
